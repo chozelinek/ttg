@@ -59,7 +59,7 @@ optional arguments:
 ### Example
 
 ```shell
-python treetagger.py -i input/directory/ -o output/directory -l es -e s --tokenize -p "*.xml" -a spanish-abbreviations
+python treetagger.py -i input/directory/ -o output/directory/ -l es -e s --tokenize -p "*.xml" -a spanish-abbreviations
 ```
 
 ### A pipeline for Spanish
@@ -70,5 +70,5 @@ python pre_treetagger.py -i input/directory/ -o output/directory/ -t s -g "*.xml
 # tag files with TTWoTTW
 python treetagger.py -i input/directory/ -o output/directory/ -l es -e s --tokenize -a spanish-abbreviations -p "*.xml"
 # postprocess files
-python post_treetagger.py -i input/directory/ -o output/directory -l es -g "*.vrt"
+python post_treetagger.py -i input/directory/ -o output/directory/ -l es -g "*.vrt"
 ```
