@@ -1,6 +1,6 @@
-# **T**ree**T**agger**W**rapper **o**f **T**ree**T**agger**W**rapper
+# TreeTaggerWrapper of TreeTaggerWrapper
 
-This is a wrapper to annotate XML files with TreeTagger. The goal is to get always well-formed XML and to customize TreeTagger behaviour as needed.
+**T**ree**T**agger**W**rapper **o**f **T**ree**T**agger**W**rapper is a wrapper to annotate XML files with TreeTagger. The goal is to get always well-formed XML and to customize TreeTagger behaviour as needed.
 
 This script bundle uses a modified version of [Laurent Pointal's treetaggerwrapper](https://pypi.python.org/pypi/treetaggerwrapper).
 
@@ -68,7 +68,7 @@ python treetagger.py -i input/directory/ -o output/directory -l es -e s --tokeni
 # preprocess files
 python pre_treetagger.py -i input/directory/ -o output/directory/ -t s -g "*.xml"
 # tag files with TTWoTTW
-python treetagger.py -i input/directory/ -o output/directory/ -l es -e s --tokenize -a spanish-abbreviations -p "*.xml" 
+python treetagger.py -i input/directory/ -o output/directory/ -l es -e s --tokenize -a spanish-abbreviations -p "*.xml"
 # postprocess files
 python post_treetagger.py -i input/directory/ -o output/directory -l es -g "*.vrt"
 ```
