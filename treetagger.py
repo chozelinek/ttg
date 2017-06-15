@@ -76,7 +76,7 @@ class TagWithTreeTagger(object):
         parser = etree.XMLParser(remove_blank_text=True)
         with open(infile, encoding='utf-8', mode='r') as input:
             return etree.parse(input, parser)
-        
+
     def unprettify(self, tree):
         """Remove any indentation introduced by pretty print."""
         tree = etree.tostring(  # convert XML tree to string
@@ -133,9 +133,14 @@ class TagWithTreeTagger(object):
             tokenizer._params.abbrev_types.update(
                 self.loc['extra_abbreviations'])
         return tokenizer
-    
+
     def init_tagger(self):
-        tagger = treetaggerwrapper.TreeTagger(TAGLANG=self.language)
+        if self.abbreviation is not None:
+            tagger = treetaggerwrapper.TreeTagger(
+                TAGLANG=self.language,
+                TAGABBREV=self.abbreviation)
+        else:
+            tagger = treetaggerwrapper.TreeTagger(TAGLANG=self.language)
         return tagger
 
     def get_sentences(self, element):
@@ -148,7 +153,7 @@ class TagWithTreeTagger(object):
         sentences = self.tokenizer.tokenize(text)
         element.text = None
         return sentences
-    
+
     def escape(self, tags):
         output = []
         for tag in tags:
@@ -172,7 +177,7 @@ class TagWithTreeTagger(object):
                         output.append(html.escape(tag))
                     else:
                         output.append(tag)
-        return output    
+        return output
 
     def main(self):
         for infile in self.infiles:
@@ -187,7 +192,7 @@ class TagWithTreeTagger(object):
                             tags = self.tagger.tag_text(html.unescape(s), notagdns=True, notagip=True, notagurl=True, notagemail=True)
                         else:
                             tags = self.tagger.tag_text(html.unescape(s), notagdns=True, notagip=True, notagurl=True, notagemail=True, tagonly=True)
-                        tags = self.escape(tags)   
+                        tags = self.escape(tags)
                         xml = etree.SubElement(e, 's')
                         for tag in tags:
                             try:
@@ -197,13 +202,13 @@ class TagWithTreeTagger(object):
                                 dummy_token.text = '\n{}\n'.format(tag)
                                 xml.append(dummy_token)
                         etree.strip_tags(xml, 'dummy')
-                        
+
                 else:
                     if self.tokenize:
                         tags = self.tagger.tag_text(html.unescape(etree.tostring(e, encoding='utf-8').decode()), notagdns=True, notagip=True, notagurl=True, notagemail=True)
                     else:
                         tags = self.tagger.tag_text(html.unescape(etree.tostring(e, encoding='utf-8').decode()), notagdns=True, notagip=True, notagurl=True, notagemail=True, tagonly=True)
-                    tags = self.escape(tags)   
+                    tags = self.escape(tags)
                     tags = '\n'.join(tags)
                     xml = etree.fromstring(tags)
                     e.getparent().replace(e, xml)
@@ -248,7 +253,14 @@ class TagWithTreeTagger(object):
             required=False,
             default=False,
             action="store_true",
-            help="if provided, it tokenizes the text, else, it expects one token per line.")
+            help="if provided, it tokenizes the text, else, it expects one\
+            token per line.")
+        parser.add_argument(
+            "-a", "--abbreviation",
+            required=False,
+            default=None,
+            help="path to the abbreviation file, if not provided uses default\
+            TreeTagger's abbreviation file.")
         args = parser.parse_args()
         self.indir = args.input
         self.outdir = args.output
@@ -259,6 +271,7 @@ class TagWithTreeTagger(object):
         self.pattern = args.pattern
         self.sentence = args.sentence
         self.tokenize = args.tokenize
+        self.abbreviation = args.abbreviation
         pass
 
 
