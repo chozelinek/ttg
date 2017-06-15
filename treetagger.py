@@ -115,6 +115,7 @@ class TagWithTreeTagger(object):
         pass
 
     def process_abbreviations(self):
+        """Convert TTG abbreviations to NLTK tokenizer._params.abbrev_types."""
         with open(self.abbreviation, mode='r', encoding='utf-8') as afile:
             abbreviations = afile.read()
         abbreviations = abbreviations.strip()
