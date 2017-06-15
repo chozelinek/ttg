@@ -178,7 +178,8 @@ class TagWithTreeTagger(object):
             else:
                 test = re.match(r'<rep(.+?) text="(.+)"', tag)
                 if test is not None:
-                    output.append('<rep{} text="{}"/>'.format(test.group(1), html.escape(test.group(2))))
+                    output.append('<rep{} text="{}"/>'.format(
+                        test.group(1), html.escape(test.group(2))))
                 else:
                     if re.match(r'[<>]\t', tag):
                         output.append(html.escape(tag))
@@ -285,13 +286,13 @@ class TagWithTreeTagger(object):
             default=False,
             action="store_true",
             help="if provided, it tokenizes the text, else, it expects one\
-            token per line.")
+                  token per line.")
         parser.add_argument(
             "-a", "--abbreviation",
             required=False,
             default=None,
             help="path to the abbreviation file, if not provided uses default\
-            TreeTagger's abbreviation file.")
+                  TreeTagger's abbreviation file.")
         args = parser.parse_args()
         self.indir = args.input
         self.outdir = args.output
