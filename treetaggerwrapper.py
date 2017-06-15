@@ -673,11 +673,11 @@ g_langsupport['gl']['fclictic'] = "-la|-las|-lo|-los|-nos"
 ellipfind_re = re.compile(r"((?:\.\.\.)|…)")
 ellipfind_subst = " ... "
 # A regexp to put spaces if missing after alone marks.
-punct1find_re = re.compile("([" + ALONEMARKS + "])([^ ])",
+punct1find_re = re.compile("([" + ALONEMARKS + "])([^ \d])",
                            re.IGNORECASE | re.VERBOSE)
 punct1find_subst = "\\1 \\2"
 # A regexp to put spaces if missing before alone marks.
-punct2find_re = re.compile("([^ ])([[" + ALONEMARKS + "])",
+punct2find_re = re.compile("([^ \d])([[" + ALONEMARKS + "])",
                            re.IGNORECASE | re.VERBOSE)
 punct2find_subst = "\\1 \\2"
 # A regexp to identify acronyms like U.S.A. or U.S.A (written to force
