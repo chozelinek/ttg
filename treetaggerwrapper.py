@@ -505,7 +505,7 @@ TAGGER_TIMEOUT = 30
 # Notes: chars from ALONEMARKS may be in pchar or fchar too, to identify
 #   punctuation after a fchar.
 # See Unicode database…
-ALONEMARKS = "!?¿;\"«»“”´`¨,*¤@°:%|¦/" \
+ALONEMARKS = "!¡?¿;\"«»“”´`¨,*¤@°:%|¦/" \
              "()[\\]{}<>«»\u008b\u009b\u0093" \
              "&~=±×\226\227" \
              "\t\n\r" \
