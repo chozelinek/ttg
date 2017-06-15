@@ -34,7 +34,6 @@ class TagWithTreeTagger(object):
         self.cli()
         self.infiles = self.get_files(self.indir, self.pattern)
         self.counter = 0
-        self.loc = self.get_localized_vars()
         self.tokenizer = self.init_tokenizer()
         self.tagger = self.init_tagger()
         self.main()
@@ -57,15 +56,6 @@ class TagWithTreeTagger(object):
             for filename in fnmatch.filter(filenames, fileclue):
                 matches.append(os.path.join(root, filename))
         return matches
-
-    def get_localized_vars(self):
-        """Import localized variables from JSON file."""
-        fname = self.language+".json"
-        fpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], 'localization', fname)
-        with open(fpath, mode="r", encoding="utf-8") as jfile:
-            content = jfile.read()
-        vars = json.loads(content)
-        return vars
 
     def read_xml(self, infile):
         """Parse a XML file.
@@ -124,14 +114,23 @@ class TagWithTreeTagger(object):
             ofile.write(xml)
         pass
 
+    def process_abbreviations(self):
+        with open(self.abbreviation, mode='r', encoding='utf-8') as afile:
+            abbreviations = afile.read()
+        abbreviations = abbreviations.strip()
+        abbreviations = abbreviations.split('\n')
+        abbreviations = [re.sub(r'\.$', r'', x) for x in abbreviations]
+        abbreviations = [x.lower() for x in abbreviations]
+        return abbreviations
+
     def init_tokenizer(self):
         """Instantiate a tokenizer suitable for the language at stake."""
         lang = {'en': 'english', 'de': 'german', 'es': 'spanish'}
         tokenizer = nltk.data.load(
             'tokenizers/punkt/{}.pickle'.format(lang[self.language]))
-        if 'extra_abbreviations' in self.loc:
-            tokenizer._params.abbrev_types.update(
-                self.loc['extra_abbreviations'])
+        if self.abbreviation is not None:
+            extra_abbreviations = self.process_abbreviations()
+            tokenizer._params.abbrev_types.update(extra_abbreviations)
         return tokenizer
 
     def init_tagger(self):
