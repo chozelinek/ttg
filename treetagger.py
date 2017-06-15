@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -5,7 +6,6 @@ import argparse
 from lxml import etree
 import fnmatch
 import time
-import json
 import nltk
 import treetaggerwrapper
 import html
@@ -135,6 +135,7 @@ class TagWithTreeTagger(object):
         return tokenizer
 
     def init_tagger(self):
+        """Instantiate a TreeTagger tagger for the language at stake."""
         if self.abbreviation is not None:
             tagger = treetaggerwrapper.TreeTagger(
                 TAGLANG=self.language,
@@ -163,7 +164,13 @@ class TagWithTreeTagger(object):
                     output.append(tag)
                 except:
                     tag = re.sub(r'(<)(.+) (>)', r'\1\n\2\n\3', tag)
-                    tag = self.tagger.tag_text(tag, notagdns=True, notagip=True, notagurl=True, notagemail=True, tagonly=True)
+                    tag = self.tagger.tag_text(
+                        tag,
+                        notagdns=True,
+                        notagip=True,
+                        notagurl=True,
+                        notagemail=True,
+                        tagonly=True)
                     tag = [html.escape(t) for t in tag]
                     output += tag
             elif not re.match(r'<.+>$', tag):
@@ -189,9 +196,20 @@ class TagWithTreeTagger(object):
                     sentences = self.get_sentences(e)
                     for s in sentences:
                         if self.tokenize:
-                            tags = self.tagger.tag_text(html.unescape(s), notagdns=True, notagip=True, notagurl=True, notagemail=True)
+                            tags = self.tagger.tag_text(
+                                html.unescape(s),
+                                notagdns=True,
+                                notagip=True,
+                                notagurl=True,
+                                notagemail=True)
                         else:
-                            tags = self.tagger.tag_text(html.unescape(s), notagdns=True, notagip=True, notagurl=True, notagemail=True, tagonly=True)
+                            tags = self.tagger.tag_text(
+                                html.unescape(s),
+                                notagdns=True,
+                                notagip=True,
+                                notagurl=True,
+                                notagemail=True,
+                                tagonly=True)
                         tags = self.escape(tags)
                         xml = etree.SubElement(e, 's')
                         for tag in tags:
@@ -205,9 +223,22 @@ class TagWithTreeTagger(object):
 
                 else:
                     if self.tokenize:
-                        tags = self.tagger.tag_text(html.unescape(etree.tostring(e, encoding='utf-8').decode()), notagdns=True, notagip=True, notagurl=True, notagemail=True)
+                        tags = self.tagger.tag_text(
+                            html.unescape(
+                                etree.tostring(e, encoding='utf-8').decode()),
+                            notagdns=True,
+                            notagip=True,
+                            notagurl=True,
+                            notagemail=True)
                     else:
-                        tags = self.tagger.tag_text(html.unescape(etree.tostring(e, encoding='utf-8').decode()), notagdns=True, notagip=True, notagurl=True, notagemail=True, tagonly=True)
+                        tags = self.tagger.tag_text(
+                            html.unescape(
+                                etree.tostring(e, encoding='utf-8').decode()),
+                            notagdns=True,
+                            notagip=True,
+                            notagurl=True,
+                            notagemail=True,
+                            tagonly=True)
                     tags = self.escape(tags)
                     tags = '\n'.join(tags)
                     xml = etree.fromstring(tags)
