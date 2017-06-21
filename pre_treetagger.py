@@ -128,7 +128,13 @@ class PreTokenizer(object):
                     parent.text = tc
                 elif tc_is_tail:
                     parent.tail = tc
-            output = self.unprettify(tree)
+#             output = self.unprettify(tree)
+            output = etree.tostring(
+                tree,
+                encoding='UTF-8',
+                method='xml',
+                xml_declaration=True,
+                pretty_print=True).decode()
             self.serialize(output, ifile)
             self.counter += 1
         pass
