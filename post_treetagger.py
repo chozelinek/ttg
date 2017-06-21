@@ -102,20 +102,37 @@ class PostTagger(object):
             r"\n",
             tree)
         return tree
+    
+    def search_and_replace(self, tc):
+        if self.lang == 'es':
+            tc = re.sub(
+                r"\nSr\.?\t.+?\n", r"\nSr.\tNC\tseñor\n", tc)
+            tc = re.sub(
+                r"\nSra\.?\t.+?\n", r"\nSra.\tNC\tseñora\n", tc)
+        return tc
 
     def main(self):
         for ifile in self.ifiles:
             print(ifile)
             tree = self.read_xml(ifile)
-            text_containers = tree.xpath('.//{}'.format(self.text))
+#             text_containers = tree.xpath('.//{}'.format(self.text))
+            text_containers = tree.xpath('.//{}//text()'.format(self.text))
             for tc in text_containers:
-                text = tc.text
-                if self.lang == 'es':
-                    text = re.sub(
-                        r"\nSr\.\t.+?\n", r"\nSr.\tNC\tseñor\n", text)
-                    text = re.sub(
-                        r"\nSra\.\t.+?\n", r"\nSra.\tNC\tseñora\n", text)
-                tc.text = text
+#                 text = tc.text
+#                 if self.lang == 'es':
+#                     text = re.sub(
+#                         r"\nSr\.\t.+?\n", r"\nSr.\tNC\tseñor\n", text)
+#                     text = re.sub(
+#                         r"\nSra\.\t.+?\n", r"\nSra.\tNC\tseñora\n", text)
+#                 tc.text = text
+                tc_is_text = tc.is_text
+                tc_is_tail = tc.is_tail
+                parent = tc.getparent()
+                tc = self.search_and_replace(tc)
+                if tc_is_text:
+                    parent.text = tc
+                elif tc_is_tail:
+                    parent.tail = tc
             output = self.unprettify(tree)
             self.serialize(output, ifile)
             self.counter += 1

@@ -102,19 +102,33 @@ class PreTokenizer(object):
             r"\n",
             tree)
         return tree
+    
+    def search_and_replace(self, tc):
+        tc = re.sub(r"(\s)-+(\w)", r"\1—\2", tc)
+        tc = re.sub(r"(\w)-+(\s)", r"\1—\2", tc)
+        tc = re.sub(r"(\s)-(\s)", r"\1—\2", tc)
+        return tc
 
     def main(self):
         for ifile in self.ifiles:
             print(ifile)
             tree = self.read_xml(ifile)
-            text_containers = tree.xpath('.//{}'.format(self.text))
+            text_containers = tree.xpath('.//{}//text()'.format(self.text))
             for tc in text_containers:
-                text = tc.text
-                text = re.sub(r"(\s)-+(\w)", r"\1—\2", text)
-                text = re.sub(r"(\w)-+(\s)", r"\1—\2", text)
-                text = re.sub(r"(\s)-(\s)", r"\1—\2", text)
-                tc.text = text
-                output = self.unprettify(tree)
+#                 text = tc.text
+#                 tc = re.sub(r"(\s)-+(\w)", r"\1—\2", tc)
+#                 tc = re.sub(r"(\w)-+(\s)", r"\1—\2", tc)
+#                 tc = re.sub(r"(\s)-(\s)", r"\1—\2", tc)
+#                 tc.text = text
+                tc_is_text = tc.is_text
+                tc_is_tail = tc.is_tail
+                parent = tc.getparent()
+                tc = self.search_and_replace(tc)
+                if tc_is_text:
+                    parent.text = tc
+                elif tc_is_tail:
+                    parent.tail = tc
+            output = self.unprettify(tree)
             self.serialize(output, ifile)
             self.counter += 1
         pass
