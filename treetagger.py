@@ -7,7 +7,7 @@ from lxml import etree
 import fnmatch
 import time
 import nltk
-import treetaggerwrapper
+import mytreetaggerwrapper as ttw
 import html
 import re
 
@@ -137,11 +137,11 @@ class TagWithTreeTagger(object):
     def init_tagger(self):
         """Instantiate a TreeTagger tagger for the language at stake."""
         if self.abbreviation is not None:
-            tagger = treetaggerwrapper.TreeTagger(
+            tagger = ttw.TreeTagger(
                 TAGLANG=self.language,
                 TAGABBREV=self.abbreviation)
         else:
-            tagger = treetaggerwrapper.TreeTagger(TAGLANG=self.language)
+            tagger = ttw.TreeTagger(TAGLANG=self.language)
         return tagger
 
     def get_sentences(self, element):

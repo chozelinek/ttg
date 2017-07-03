@@ -2,7 +2,7 @@
 
 **T**ree**T**agger**W**rapper **o**f **T**ree**T**agger**W**rapper is a wrapper to annotate XML files with TreeTagger. The goal is to get always well-formed XML and to customize TreeTagger behaviour as needed.
 
-This script bundle uses a modified version of [Laurent Pointal's treetaggerwrapper](https://pypi.python.org/pypi/treetaggerwrapper).
+This script bundle relies on a [modified version](https://github.com/chozelinek/mytreetaggerwrapper) of [Laurent Pointal's treetaggerwrapper](https://pypi.python.org/pypi/treetaggerwrapper).
 
 ## Contents
 
@@ -13,8 +13,7 @@ This script bundle uses a modified version of [Laurent Pointal's treetaggerwrapp
 ├── pre_treetagger.py: script to normalize characters
 ├── requirements.txt: Python dependencies
 ├── spanish-abbreviations: one token per line, true case and punctuation (TreeTagger expected format)
-├── treetagger.py: the wrapper of the wrapper
-└── treetaggerwrapper.py: Laurent Pointal's wrapper with some minor modifications
+└── treetagger.py: the wrapper of the wrapper
 ```
 
 ## Requirements
