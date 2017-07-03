@@ -6,7 +6,7 @@ import argparse
 import time
 import fnmatch
 from lxml import etree
-import re
+import regex as re
 
 
 def timeit(method):
@@ -104,15 +104,117 @@ class PreTokenizer(object):
         return tree
     
     def search_and_replace(self, tc):
+        # replace unicode punctuation
+        tc = re.sub(r'，', r',', tc)
+        tc = re.sub(r'。', r'. ', tc)
+        tc = re.sub(r'、', r',', tc)
+        tc = re.sub(r'”', r'"', tc)
+        tc = re.sub(r'“', r'"', tc)
+        tc = re.sub(r'∶', r':', tc)
+        tc = re.sub(r'：', r':', tc)
+        tc = re.sub(r'？', r'?', tc)
+        tc = re.sub(r'《', r'"', tc)
+        tc = re.sub(r'》', r'"', tc)
+        tc = re.sub(r'）', r')', tc)
+        tc = re.sub(r'！', r'!', tc)
+        tc = re.sub(r'（', r'(', tc)
+        tc = re.sub(r'；', r';', tc)
+        tc = re.sub(r'１', r'"', tc)
+        tc = re.sub(r'」', r'"', tc)
+        tc = re.sub(r'「', r'"', tc)
+        tc = re.sub(r'０', r'0', tc)
+        tc = re.sub(r'３', r'3', tc)
+        tc = re.sub(r'２', r'2', tc)
+        tc = re.sub(r'５', r'5', tc)
+        tc = re.sub(r'６', r'6', tc)
+        tc = re.sub(r'９', r'9', tc)
+        tc = re.sub(r'７', r'7', tc)
+        tc = re.sub(r'８', r'8', tc)
+        tc = re.sub(r'４', r'4', tc)
+        tc = re.sub(r'．', r'. ', tc)
+        tc = re.sub(r'～', r'~', tc)
+        tc = re.sub(r'’', r'\'', tc)
+        tc = re.sub(r'…', r'\.\.\.', tc)
+        tc = re.sub(r'━', r'-', tc)
+        tc = re.sub(r'〈', r'<', tc)
+        tc = re.sub(r'〉', r'>', tc)
+        tc = re.sub(r'【', r'[', tc)
+        tc = re.sub(r'】', r']', tc)
+        tc = re.sub(r'％', r'%', tc)
+        # normalize punctuation
         tc = re.sub(r"(\s)-+(\w)", r"\1—\2", tc)
         tc = re.sub(r"(\w)-+(\s)", r"\1—\2", tc)
-        tc = re.sub(r"(\s)-(\s)", r"\1—\2", tc)
+        tc = re.sub(r"(\s)-+(\s)", r"\1—\2", tc)
+        tc = re.sub(r"\r", r"", tc)
+        # remove extra spaces
+        tc = re.sub(r'\(', r' (', tc)
+        tc = re.sub(r'\)', r') ', tc)
+        tc = re.sub(r' +', r' ', tc)
+        tc = re.sub(r'\) ([\.\!\:\?\;\,])', r')\1', tc)
+        tc = re.sub(r'\( ', r'(', tc)
+        tc = re.sub(r' \)', r')', tc)
+        tc = re.sub(r'(\d) \%', r'\1%', tc)
+        tc = re.sub(r' :', r':', tc)
+        tc = re.sub(r' ;', r';', tc)
+        # normalize unicode punctuation
+        tc = re.sub(r'\`', r'\'', tc)
+        tc = re.sub(r'\'\'', r' " ', tc)
+        tc = re.sub(r'„', r'"', tc)
+        tc = re.sub(r'“', r'"', tc)
+        tc = re.sub(r'”', r'"', tc)
+        tc = re.sub(r'–', r'-', tc)
+#         tc = re.sub(r'—', r' - ', tc)
+        tc = re.sub(r' +', r' ', tc)
+        tc = re.sub(r'´', r'\'', tc)
+        tc = re.sub(r'(\p{L})‘(\p{L})', r'\1\'\2', tc)
+        tc = re.sub(r'(\p{L})’(\p{L})', r'\1\'\2', tc)
+        tc = re.sub(r'‘', r'"', tc)
+        tc = re.sub(r'‚', r'"', tc)
+        tc = re.sub(r'’', r'"', tc)
+        tc = re.sub(r'\'\'', r'"', tc)
+        tc = re.sub(r'´´', r'"', tc)
+        tc = re.sub(r'…', r'...', tc)
+        # French quotes
+        tc = re.sub(r' « ', r' "', tc)
+        tc = re.sub(r'« ', r'"', tc)
+        tc = re.sub(r'«', r'"', tc)
+        tc = re.sub(r' » ', r'" ', tc)
+        tc = re.sub(r' »', r'"', tc)
+        tc = re.sub(r'»', r'"', tc)
+        # handle pseudo-spaces
+        tc = re.sub(r' \%', r'\%', tc)
+        tc = re.sub(r'nº ', r'nº ', tc)
+        tc = re.sub(r' :', r':', tc)
+        tc = re.sub(r' ºC', r' ºC', tc)
+        tc = re.sub(r' cm', r' cm', tc)
+        tc = re.sub(r' \?', r'\?', tc)
+        tc = re.sub(r' \!', r'\!', tc)
+        tc = re.sub(r' ;', r';', tc)
+        tc = re.sub(r', ', r', ', tc)
+        tc = re.sub(r' +', r' ', tc)
+        # English "quotation," followed by comma, style
+        if self.lang is "en":
+            tc = re.sub(r'\"([,\.]+)', r'\1"', tc)
+        # German/Spanish/French "quotation", followed by comma, style
+        else:
+            tc = re.sub(r',\"', r'",', tc)    
+            tc = re.sub(r'(\.+)\"(\s*[^<])', r'"\1\2', tc)
+        # Numbers
+        tc = re.sub(r' (\p{P})?(\d{1,3}) (\d{3}) ?(\d{3})? ?(\d{3})? ?(\d{3})? ?', r' \1\2\3\4\5\6 ', tc)
+        # remove non-printing characters
+        tc = re.sub(r"\p{C}", r" ", tc)
+        # remove too many white spaces
+        tc = re.sub(r" {2,}", r" ", tc)
         return tc
-
+    
     def main(self):
         for ifile in self.ifiles:
             print(ifile)
             tree = self.read_xml(ifile)
+            if self.strip is True:
+                elements = tree.xpath('.//{}'.format(self.text))
+                for e in elements:
+                    e.text = e.text.strip()
             text_containers = tree.xpath('.//{}//text()'.format(self.text))
             for tc in text_containers:
 #                 text = tc.text
@@ -159,16 +261,31 @@ class PreTokenizer(object):
             default="s",
             help="element containing text to be kept (by default 's').")
         parser.add_argument(
+            "-l",
+            "--language",
+            required=True,
+            choices=['es', 'en', 'de'],
+            help="language of the version to be processed.")
+        parser.add_argument(
             "-g",
             "--glob_pattern",
             required=False,
             default="*.xml",
             help="glob pattern to filter files.")
+        parser.add_argument(
+            "-s",
+            "--strip",
+            required=False,
+            default=False,
+            action="store_true",
+            help="strip empty lines and white spaces for text. False by default.")
         args = parser.parse_args()
         self.idir = args.input
         self.odir = args.output
         self.text = args.text
         self.pattern = args.glob_pattern
+        self.strip = args.strip
+        self.lang = args.language
         pass
 
 
