@@ -1,6 +1,6 @@
-# TreeTaggerWrapper of TreeTaggerWrapper
+# Wrapper of TreeTaggerWrapper
 
-**T**ree**T**agger**W**rapper **o**f **T**ree**T**agger**W**rapper is a wrapper to annotate XML files with TreeTagger. The goal is to get always well-formed XML and to customize TreeTagger behaviour as needed.
+**W**rapper **o**f **T**ree**T**agger**W**rapper is a wrapper to annotate XML files with TreeTagger. The goal is to get always well-formed XML and to customize TreeTagger behaviour as needed.
 
 This script bundle relies on a [modified version](https://github.com/chozelinek/mytreetaggerwrapper) of [Laurent Pointal's treetaggerwrapper](https://pypi.python.org/pypi/treetaggerwrapper).
 
@@ -18,7 +18,7 @@ This script bundle relies on a [modified version](https://github.com/chozelinek/
 
 ## Requirements
 
-In order to use the `TTWoTTW` you will need to:
+In order to use the `WoTTW` you will need to:
 
 1. clone this repository
 1. install python dependencies `pip install -r requirements.txt`
