@@ -1,6 +1,13 @@
 # Wrapper of TreeTaggerWrapper
 
-**W**rapper **o**f **T**ree**T**agger**W**rapper is a wrapper to annotate XML files with TreeTagger. The goal is to get always well-formed XML and to customize TreeTagger behaviour as needed.
+**W**rapper **o**f **T**ree**T**agger**W**rapper is a wrapper to annotate XML files with TreeTagger. The aims of this wrapper are:
+
+- to get always well-formed XML output
+- to process files in batch mode
+- to load TreeTagger parameters only once to reduce downtime
+- to customize TreeTagger behaviour as needed
+
+The wrapper comes with a preprocessing script (`pre_treetagger.py`) providing character normalization. And a postprocessing script (`post_treetagger.py`) fixing some issues.
 
 This script bundle relies on a [modified version](https://github.com/chozelinek/mytreetaggerwrapper) of [Laurent Pointal's treetaggerwrapper](https://pypi.python.org/pypi/treetaggerwrapper).
 
