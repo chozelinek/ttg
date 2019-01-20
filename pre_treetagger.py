@@ -102,7 +102,7 @@ class PreTokenizer(object):
             r"\n",
             tree)
         return tree
-    
+
     def search_and_replace(self, tc):
         # replace unicode punctuation
         tc = re.sub(r'，', r',', tc)
@@ -133,7 +133,7 @@ class PreTokenizer(object):
         tc = re.sub(r'４', r'4', tc)
         tc = re.sub(r'．', r'. ', tc)
         tc = re.sub(r'～', r'~', tc)
-        tc = re.sub(r'’', r'\'', tc)
+        tc = re.sub(r'’', r"'", tc)
         tc = re.sub(r'…', r'\.\.\.', tc)
         tc = re.sub(r'━', r'-', tc)
         tc = re.sub(r'〈', r'<', tc)
@@ -157,7 +157,7 @@ class PreTokenizer(object):
         tc = re.sub(r' :', r':', tc)
         tc = re.sub(r' ;', r';', tc)
         # normalize unicode punctuation
-        tc = re.sub(r'\`', r'\'', tc)
+        tc = re.sub(r'\`', r"'", tc)
         tc = re.sub(r'\'\'', r' " ', tc)
         tc = re.sub(r'„', r'"', tc)
         tc = re.sub(r'“', r'"', tc)
@@ -165,9 +165,9 @@ class PreTokenizer(object):
         tc = re.sub(r'–', r'-', tc)
 #         tc = re.sub(r'—', r' - ', tc)
         tc = re.sub(r' +', r' ', tc)
-        tc = re.sub(r'´', r'\'', tc)
-        tc = re.sub(r'(\p{L})‘(\p{L})', r'\1\'\2', tc)
-        tc = re.sub(r'(\p{L})’(\p{L})', r'\1\'\2', tc)
+        tc = re.sub(r'´', r"'", tc)
+        tc = re.sub(r'(\p{L})‘(\p{L})', r"\1'\2", tc)
+        tc = re.sub(r'(\p{L})’(\p{L})', r"\1'\2", tc)
         tc = re.sub(r'‘', r'"', tc)
         tc = re.sub(r'‚', r'"', tc)
         tc = re.sub(r'’', r'"', tc)
@@ -197,7 +197,7 @@ class PreTokenizer(object):
             tc = re.sub(r'\"([,\.]+)', r'\1"', tc)
         # German/Spanish/French "quotation", followed by comma, style
         else:
-            tc = re.sub(r',\"', r'",', tc)    
+            tc = re.sub(r',\"', r'",', tc)
             tc = re.sub(r'(\.+)\"(\s*[^<])', r'"\1\2', tc)
         # Numbers
         tc = re.sub(r' (\p{P})?(\d{1,3}) (\d{3}) ?(\d{3})? ?(\d{3})? ?(\d{3})? ?', r' \1\2\3\4\5\6 ', tc)
@@ -206,7 +206,7 @@ class PreTokenizer(object):
         # remove too many white spaces
         tc = re.sub(r" {2,}", r" ", tc)
         return tc
-    
+
     def main(self):
         for ifile in self.ifiles:
             print(ifile)
@@ -233,7 +233,7 @@ class PreTokenizer(object):
 #             output = self.unprettify(tree)
             output = etree.tostring(
                 tree,
-                encoding='UTF-8',
+                encoding='utf-8',
                 method='xml',
                 xml_declaration=True,
                 pretty_print=True).decode()
