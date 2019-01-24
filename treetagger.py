@@ -191,10 +191,10 @@ class TagWithTreeTagger(object):
         for infile in self.infiles:
             print(infile)
             tree = self.read_xml(infile)
-            elements = tree.xpath('.//{}'.format(self.element))
-            for e in elements:
+            if self.is_root:
+                root = tree.getroot()
                 if self.sentence:
-                    sentences = self.get_sentences(e)
+                    sentences = self.get_sentences(root)
                     for s in sentences:
                         if self.tokenize:
                             tags = self.tagger.tag_text(
@@ -212,7 +212,7 @@ class TagWithTreeTagger(object):
                                 notagemail=True,
                                 tagonly=True)
                         tags = self.escape(tags)
-                        xml = etree.SubElement(e, 's')
+                        xml = etree.SubElement(root, 's')
                         for tag in tags:
                             try:
                                 xml.append(etree.fromstring(tag))
@@ -221,12 +221,22 @@ class TagWithTreeTagger(object):
                                 dummy_token.text = '\n{}\n'.format(tag)
                                 xml.append(dummy_token)
                         etree.strip_tags(xml, 'dummy')
-
                 else:
                     if self.tokenize:
+                        # text = html.unescape(
+                        #         etree.tostring(root, encoding='utf-8').decode())
+                        lines = [x.strip() for x in etree.tostring(root, encoding='utf-8', pretty_print=True).decode().split('\n')]
+                        text = list()
+                        for line in lines:
+                        # for element in root.iter():
+                            if not re.match(r'<{}'.format(self.element), line):
+                                text.append(line)
+                            else:
+                                text.append(html.unescape(line))
+                        # text = etree.tostring(root, encoding='utf-8').decode()
+                        text = "\n".join(text)
                         tags = self.tagger.tag_text(
-                            html.unescape(
-                                etree.tostring(e, encoding='utf-8').decode()),
+                            text,
                             notagdns=True,
                             notagip=True,
                             notagurl=True,
@@ -234,7 +244,7 @@ class TagWithTreeTagger(object):
                     else:
                         tags = self.tagger.tag_text(
                             html.unescape(
-                                etree.tostring(e, encoding='utf-8').decode()),
+                                etree.tostring(root, encoding='utf-8').decode()),
                             notagdns=True,
                             notagip=True,
                             notagurl=True,
@@ -243,9 +253,69 @@ class TagWithTreeTagger(object):
                     tags = self.escape(tags)
                     tags = '\n'.join(tags)
                     xml = etree.fromstring(tags)
-                    e.getparent().replace(e, xml)
-            self.serialize(infile, tree)
+            else:
+                elements = tree.xpath('.//{}'.format(self.element))
+                for e in elements:
+                    if self.sentence:
+                        sentences = self.get_sentences(e)
+                        for s in sentences:
+                            if self.tokenize:
+                                tags = self.tagger.tag_text(
+                                    html.unescape(s),
+                                    notagdns=True,
+                                    notagip=True,
+                                    notagurl=True,
+                                    notagemail=True)
+                            else:
+                                tags = self.tagger.tag_text(
+                                    html.unescape(s),
+                                    notagdns=True,
+                                    notagip=True,
+                                    notagurl=True,
+                                    notagemail=True,
+                                    tagonly=True)
+                            tags = self.escape(tags)
+                            xml = etree.SubElement(e, 's')
+                            for tag in tags:
+                                try:
+                                    xml.append(etree.fromstring(tag))
+                                except:
+                                    dummy_token = etree.Element('dummy')
+                                    dummy_token.text = '\n{}\n'.format(tag)
+                                    xml.append(dummy_token)
+                            etree.strip_tags(xml, 'dummy')
+
+                    else:
+                        if self.tokenize:
+                            tags = self.tagger.tag_text(
+                                html.unescape(
+                                    etree.tostring(e, encoding='utf-8').decode()),
+                                notagdns=True,
+                                notagip=True,
+                                notagurl=True,
+                                notagemail=True)
+                        else:
+                            tags = self.tagger.tag_text(
+                                html.unescape(
+                                    etree.tostring(e, encoding='utf-8').decode()),
+                                notagdns=True,
+                                notagip=True,
+                                notagurl=True,
+                                notagemail=True,
+                                tagonly=True)
+                        tags = self.escape(tags)
+                        tags = '\n'.join(tags)
+                        xml = etree.fromstring(tags)
+                        e.getparent().replace(e, xml)
+            if self.is_root:
+                self.serialize(infile, xml)
+            else:
+                self.serialize(infile, tree)
             self.counter += 1
+            text = None
+            xml = None
+            tags = None
+            tree = None
         pass
 
     def cli(self):
@@ -269,6 +339,12 @@ class TagWithTreeTagger(object):
             required=False,
             default='p',
             help="XML element containing the text to be split in sentences.")
+        parser.add_argument(
+            "-r", "--is_root",
+            required=False,
+            default=False,
+            action="store_true",
+            help="XML element containing the text is root.")
         parser.add_argument(
             '-p', "--pattern",
             required=False,
@@ -304,6 +380,7 @@ class TagWithTreeTagger(object):
         self.sentence = args.sentence
         self.tokenize = args.tokenize
         self.abbreviation = args.abbreviation
+        self.is_root = args.is_root
         pass
 
 
