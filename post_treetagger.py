@@ -106,9 +106,12 @@ class PostTagger(object):
     def search_and_replace(self, tc):
         if self.lang == 'es':
             tc = re.sub(
-                r"\nSr\.?\t.+?\n", r"\nSr.\tNC\tseñor\n", tc)
+                r"\nSr\.?\t.+?\n\.\tFS\t\.\n", r"\nSr.\tNC\tseñor\n", tc)
             tc = re.sub(
-                r"\nSra\.?\t.+?\n", r"\nSra.\tNC\tseñora\n", tc)
+                r"\nSra\.?\t.+?\n\.\tFS\t\.\n", r"\nSra.\tNC\tseñora\n", tc)
+        if self.lang == 'en':
+            tc = re.sub(
+                r"(\n[tT]hat\tIN)/that(\tthat\n)", r"\1\2", tc)
         return tc
 
     def main(self):
@@ -167,7 +170,7 @@ class PostTagger(object):
             "-l",
             "--language",
             required=True,
-            choices=['es'],
+            choices=['es', 'en'],
             help="language."
         )
         args = parser.parse_args()
